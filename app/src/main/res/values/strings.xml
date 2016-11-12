@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Lab 1</string>
+    <string name="app_synopsis">Lab 3-Android Development</string>
+    <string name="hello_message">Hello World!</string>
+    <string name="button_name">I\'m just a button!</string>
+    <string name="title_activity_login">Lab 3</string>
+    <string name="login_label">Login</string>
+    <string name="login_hint_message">login name</string>
+    <string name="password_label">Password</string>
+    <string name="password_hint_message">Password</string>
+    <string name="enable_message">Enable Something</string>
+    <string name="button_1_label">Button 1</string>
+    <string name="button_2_label">Button 2</string>
+    <string name="loginButtonLabel">Login</string>
+    <string name="dialog_msessage">Do you wish to continue?</string>
+    <string name="dialog_title">dialog title</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="passListItemActivity">ListItemActivity passed: </string>
+    <string name="responseKey">Response</string>
+    <string name="responseValue">My information to share</string>
+    <string name="onSwchMsg">Switch is On</string>
+    <string name="offSwchMsg">Switch is off</string>
+
+</resources>

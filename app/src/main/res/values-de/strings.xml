@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name = "app_name"> Lab 1 </string>
+    <string name = "app_synopsis">" Lab 3-Android-Entwicklung "</string>
+    <string name = "hello_message"> Hallo Welt! </string>
+    <string name = "button_name"> Ich bin nur eine Schaltfläche! </string>
+    <string name = "title_activity_login">Lab 3</string>
+    <string name = "login_label"> Anmelden </string>
+    <string name = "login_hint_message"> Anmeldename </string>
+    <string name = "password_label"> Kennwort </string>
+    <string name = "password_hint_message"> Passwort </string>
+    <string name = "enable_message"> Etwas aktivieren </string>
+    <string name = "button_1_label"> Button 1 </string>
+    <string name = "button_2_label"> Button 2 </string>
+    <string name = "loginButtonLabel"> Anmelden </string>
+    <string name = "dialog_msessage"> Wollen Sie fortfahren? </string>
+    <string name = "dialog_title"> Dialogtitel </string>
+    <string name = "ok"> Ok </string>
+    <string name = "cancel"> Abbrechen </string>
+    <string name = "passListItemActivity"> ListItemActivity übergeben: </string>
+    <string name = "responseKey"> Response </string>
+    <string name = "responseValue"> Meine Informationen zum Teilen </string>
+    <string name = "onSwchMsg"> Schalter ist On </string>
+    <string name = "offSwchMsg"> Schalter ist aus </string>
+</resources>
