@@ -8,22 +8,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ChatWindow extends AppCompatActivity {
 
 
-    ArrayList<String> msgs;
-    EditText editText;
+    //ArrayList to hold the messages of the chat.
+    private ArrayList<String> msgs = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +29,12 @@ public class ChatWindow extends AppCompatActivity {
 
 
         ListView listView = (ListView) findViewById(R.id.listView);
+        final ChatAdapter messageAdapter = new ChatAdapter(this);
+        listView.setAdapter(messageAdapter);
 
 
         Button button = (Button) findViewById(R.id.sendButton);
         final EditText editText = (EditText) findViewById(R.id.editText);
-
-
-        //ArrayList to hold the messages of the chat.
-        msgs = new ArrayList<>();
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -68,9 +63,10 @@ public class ChatWindow extends AppCompatActivity {
                     todo: if the ArrayList is empty, invite the user to type something in!
                      */
 
-                    msgs.add(aSingleMessage);
+                    getMsgs().add(aSingleMessage);
                     editText.setText("");
-                    editText.setHint("So far " + msgs.size() + " messages");
+                    editText.setHint("So far " + getMsgs().size() + " messages");
+                    messageAdapter.notifyDataSetChanged();
 
                 }
 
@@ -110,17 +106,34 @@ public class ChatWindow extends AppCompatActivity {
         });
     }
 
+    /*
+
+    getters and setters for the ArrayList msgs.
+    It was first declared inside the onCreate() of the ChatWindow class, but since
+    the ChatAdapter class needed it, decided to give accessibility to it so that it can be accessed
+    from anywhere within the ChatWindow class :)
+
+     */
+    public ArrayList<String> getMsgs() {
+        return msgs;
+    }
+
+    public void setMsgs(ArrayList<String> msgs) {
+        this.msgs = msgs;
+    }
+
+
     private class ChatAdapter extends ArrayAdapter<String> {
         public ChatAdapter(Context context) {
             super(context, 0);
         }
 
         public int getCount() {
-            return msgs.size();
+            return getMsgs().size();
         }
 
         public String getItem(int position) {
-            return msgs.get(position);
+            return getMsgs().get(position);
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
@@ -133,7 +146,7 @@ public class ChatWindow extends AppCompatActivity {
             }
 
 
-            TextView message = (TextView) findViewById(R.id.message_text);  //this is the msg from the chat_row_incoming/outing
+            TextView message = (TextView) result.findViewById(R.id.message_text);  //this is the msg from the chat_row_incoming/outing
             message.setText(getItem(position));
             return result;
 
