@@ -21,5 +21,6 @@
     <string name="responseValue">My information to share</string>
     <string name="onSwchMsg">Switch is On</string>
     <string name="offSwchMsg">Switch is off</string>
+    <string name="StartChatLabel">Start Chat</string>
 
 </resources>
