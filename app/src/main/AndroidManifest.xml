@@ -3,13 +3,10 @@
     package="com.example.AndroidDevelopmentClass.Catalog">
 
     <uses-feature
-
         android:name="android.hardware.Camera"
         android:required="true" />
 
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -18,18 +15,14 @@
         android:label="@string/app_synopsis"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-       
-
-
         <activity android:name=".StartActivity">
 
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
 
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -42,12 +35,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".ListItemsActivity">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
+        <activity android:name=".ChatWindow"></activity>
     </application>
 
 </manifest>
