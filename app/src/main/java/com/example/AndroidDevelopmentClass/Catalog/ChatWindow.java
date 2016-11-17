@@ -1,6 +1,7 @@
 package com.example.AndroidDevelopmentClass.Catalog;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +20,10 @@ import java.util.ArrayList;
 
 public class ChatWindow extends AppCompatActivity {
 
+    public static final String ACTIVITY_NAME = "Query";
+    public static final String SQL_MESSAGE="SQL MESSAGE:";
+    public static final String COLUMN_COUNT = "Cursor\'s  column count= ";
+    Cursor cursor;
 
     //ArrayList to hold the messages of the chat.
     private ArrayList<String> msgs = new ArrayList<>();
@@ -34,6 +39,12 @@ public class ChatWindow extends AppCompatActivity {
         helper = new ChatDatabaseHelper(this);
         database = helper.getWritableDatabase();
         Toast.makeText(this, "made it", Toast.LENGTH_SHORT).show();
+
+
+        //This creates a string array for the
+        String[] allColumns = { ChatDatabaseHelper.COLUMN_ID, ChatDatabaseHelper.COLUMN_MESSAGE };
+        cursor = database.query(helper.TABLE_NAME,allColumns, null, null, null, null, null);
+
 
         ListView listView = (ListView) findViewById(R.id.listView);
         final ChatAdapter messageAdapter = new ChatAdapter(this);
