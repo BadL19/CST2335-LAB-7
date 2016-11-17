@@ -9,12 +9,13 @@ import android.util.Log;
  * Created by ARSIA on 11/13/2016.
  */
 
+
 public class ChatDatabaseHelper extends SQLiteOpenHelper {
     public static  final String TABLE_NAME = "CHATS";
     private static final String DATABASE_NAME = "Chats.db";
     private static final int VERSION_NUM = 1;
     public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_MESSAGE = "_empty msg";
+    public static final String COLUMN_MESSAGE = "_msg";
 
     //Database creation sql statement:
     private static final String DATABASE_CREATE = "create table "
@@ -23,7 +24,7 @@ public class ChatDatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_ID
             + " integer primary key autoincrement, "
             + COLUMN_MESSAGE
-            + " text not null);";
+            + " VARCHAR(50));";
 
 
 

@@ -20,17 +20,35 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+
 public class ChatWindow extends AppCompatActivity {
 
     public static final String ACTIVITY_NAME = "Query";
-    public static final String SQL_MESSAGE="SQL MESSAGE:";
+    public static final String SQL_MESSAGE = "SQL MESSAGE:";
     public static final String COLUMN_COUNT = "Cursor\'s  column count= ";
     Cursor cursor;
 
     //ArrayList to hold the messages of the chat.
     private ArrayList<String> msgs = new ArrayList<>();
 
+    /*
+    Exposes methods to manage a SQLite database.
+    SQLiteDatabase has methods to create, delete, execute SQL commands, and
+    perform other common database management tasks.
+     */
     SQLiteDatabase database;
+
+    /*
+    ChatDatabaseHelper extends the SQLiteOpenHelper class.
+    A helper class to manage database creation and version management.
+    You create a subclass implementing onCreate(SQLiteDatabase), onUpgrade(SQLiteDatabase, int, int)
+    and optionally onOpen(SQLiteDatabase), and this class takes care of opening the database if it
+    exists, creating it if it does not, and upgrading it as necessary. Transactions are used to make
+    sure the database is always in a sensible state.
+    This class makes it easy for ContentProvider implementations to defer opening and upgrading the
+    database until first use, to avoid blocking application startup with long-running database
+     upgrades.
+     */
     ChatDatabaseHelper helper;
 
     @Override
@@ -38,47 +56,29 @@ public class ChatWindow extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_window);
 
+        //instantiating a ChatDatabaseHelper object
         helper = new ChatDatabaseHelper(this);
+
+        //instantiating a SQLiteDatabase object
         database = helper.getWritableDatabase();
+
+        //verifying that we have successfully acquired a database.
         Toast.makeText(this, "made it", Toast.LENGTH_SHORT).show();
-
-
-        //This creates a string array for the
-        String[] allColumns = { ChatDatabaseHelper.COLUMN_ID, ChatDatabaseHelper.COLUMN_MESSAGE };
-        cursor = database.query(helper.TABLE_NAME,allColumns, null, null, null, null, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast() ) {
-
-            String newMessage = cursor.getString(cursor.getColumnIndex(ChatDatabaseHelper.COLUMN_MESSAGE));
-
-            //todo this could be adding twice with what I have in the the setOnClickListener for sendButton.
-            msgs.add(newMessage);
-            Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + cursor.getString(cursor.getColumnIndex(ChatDatabaseHelper.COLUMN_MESSAGE)));
-            // String thisName = results1.geString(nameColumnIndex);
-            cursor.moveToNext();
-        }
-
-        for(int x = 0; x < cursor.getColumnCount(); x++){
-            cursor.getColumnName(x);
-            Log.i(ACTIVITY_NAME, "Cursors  column count =" + cursor.getColumnCount() );
-        }
-
 
 
         ListView listView = (ListView) findViewById(R.id.listView);
         final ChatAdapter messageAdapter = new ChatAdapter(this);
         listView.setAdapter(messageAdapter);
-
-
         Button button = (Button) findViewById(R.id.sendButton);
         final EditText editText = (EditText) findViewById(R.id.editText);
 
-
+        /*
+        We first add the user values into the database and after the setOnClickListener, we
+        query the data at once--see lines 117 to 155
+         */
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 /*
                 get the string representation of whatever is written in the EditText, and
                 add it to the ArrayList.
@@ -87,72 +87,93 @@ public class ChatWindow extends AppCompatActivity {
 
                 /*
                 todo: the trim() VVVVVVV doesn't get rid of the carriage return!
+                todo: perhaps we *want* to keep the carriage return character!
                  */
                 int messageCharLength = aSingleMessage.trim().length();
 
-
+                //using TextUtils , show an error pop up if user attempts to send an empty msg.
                 if (TextUtils.isEmpty(aSingleMessage)) {
                     editText.setError("Empty message ignored");
                 } else {
                     /*
-                    add the msg to the ArrayList
-                    set the hint to the number of msg
+                    add the msg to the ArrayList, set the hint to the number of msg
                     todo: if the ArrayList is empty, invite the user to type something in!
                      */
-
                     getMsgs().add(aSingleMessage);
+
+                    // VVVVVV This class provides applications access to the content model.
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(ChatDatabaseHelper.COLUMN_MESSAGE, editText.getText().toString());
                     database.insert(ChatDatabaseHelper.TABLE_NAME, "null", contentValues);
                     editText.setText("");
                     editText.setHint("So far " + getMsgs().size() + " messages");
                     messageAdapter.notifyDataSetChanged();
+                }//end else
+            }//end onClick
+        });//end setOnClickListener
 
-                }
+        //This creates a string array used for the Cursor object and its query(..) method signature.
+        String[] allColumns = {ChatDatabaseHelper.COLUMN_ID, ChatDatabaseHelper.COLUMN_MESSAGE};
 
+        /*
+        query(..) signature:
+        public Cursor query (boolean distinct, String table, String[] columns, String selection,
+        String[] selectionArgs, String groupBy, String having, String orderBy, String limit)
+         */
+        cursor = database.query(helper.TABLE_NAME, allColumns, null, null, null, null, null);
 
-/*
-            A dirty way of checking if the EditText field is empty
-            if so, pop a toast ignoring the msg,
-            and avoid adding to the ArrayList msgs.
+        //move the cursor to the first row
+        cursor.moveToFirst();
 
-            if not, add the msg to the ArrayList msgs and show the number of msgs inserted so far.
+        //while the cursor is not pointing to the position after the last row (
+        while (!cursor.isAfterLast()) {
 
-                if (messageCharLength <= 0) {
-                    Toast.makeText(
-                            getApplicationContext(),
-                            "EMPTY MSG IGNORED ",
-                            Toast.LENGTH_SHORT
-                    ).show();
+            /*
+            within the while loop, the cursor keeps moving to the next value entered by the user..
+            so at the current position, the cursor is pointing to the current value,
+            and we want to put that value into the msgs ArrayList.
+            So we get the String value from the cursor that is pointing at the column labeled "_msg"
+            (otherwise known as COLUMN_MESSAGE). If we consider Key and Value pair, we are
+            looking into the Value which is the message.
+             */
+            String newMessage = cursor.getString(cursor.getColumnIndex(
+                    ChatDatabaseHelper.COLUMN_MESSAGE));
 
-                } else {
-                    msgs.add(aSingleMessage);
+            //todo this could be adding twice with what I have in the the setOnClickListener for sendButton.
+            //once we get the cursor's MESSAGE value, we add it to the msgs ArrayList.
+            msgs.add(newMessage);
 
-                    //display the last msg msgs.size()-1 in the array of msgs.
-                    //                               ^^^^
+            //log the current MESSAGE retrieved from the MESSAGE column of the current
+            // index in the CHATS table
+            Log.i(ACTIVITY_NAME, "SQL MESSAGE: " + cursor.getString(cursor.getColumnIndex(
+                    ChatDatabaseHelper.COLUMN_MESSAGE)));
 
-                    Toast.makeText(
-                            getApplicationContext(),
-                            msgs.get(msgs.size() - 1),
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    editText.setText(null);
+            //move the cursor to the next row
+            cursor.moveToNext();
+        }//end of while
 
-                }
-*/
+        //see comments for private void TableStat()
+        TableStat();
 
+    }//end onCreate
 
-            }
-        });
-    }
 
     /*
+    Using the cursor to get the number of columns, and their names
+     */
+    private void TableStat() {
+        for (int x = 0; x < cursor.getColumnCount(); x++) {
+            Log.i("Cursor column name", cursor.getColumnName(x));
+        }//end for
+        Log.i(ACTIVITY_NAME, "Cursors column count =" + cursor.getColumnCount());
+    }//end TableStat
 
+
+    /*
     getters and setters for the ArrayList msgs.
     It was first declared inside the onCreate() of the ChatWindow class, but since
     the ChatAdapter class needed it, decided to give accessibility to it so that it can be accessed
     from anywhere within the ChatWindow class :)
-
      */
     public ArrayList<String> getMsgs() {
         return msgs;
@@ -163,6 +184,9 @@ public class ChatWindow extends AppCompatActivity {
     }
 
 
+    /*
+    Takes every single simple element of the ListView view and gives it its own layout.
+     */
     private class ChatAdapter extends ArrayAdapter<String> {
         public ChatAdapter(Context context) {
             super(context, 0);
@@ -184,17 +208,18 @@ public class ChatWindow extends AppCompatActivity {
             } else {
                 result = inflater.inflate(R.layout.chat_row_incoming, null);
             }
-
-
             TextView message = (TextView) result.findViewById(R.id.message_text);  //this is the msg from the chat_row_incoming/outing
             message.setText(getItem(position));
             return result;
-
-        }
+        }//end getView
 
 
     }//end class ChatAdapter
 
+    /*
+    We want to close both the cursor and the database when the application is out of focus
+    and/or destroyed. This will prevent database leaks!
+     */
     @Override
     protected void onDestroy() {
         Log.i(ACTIVITY_NAME, "In onDestroy()");
