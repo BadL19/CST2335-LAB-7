@@ -1,11 +1,13 @@
 package com.example.AndroidDevelopmentClass.Catalog;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +46,23 @@ public class ChatWindow extends AppCompatActivity {
         //This creates a string array for the
         String[] allColumns = { ChatDatabaseHelper.COLUMN_ID, ChatDatabaseHelper.COLUMN_MESSAGE };
         cursor = database.query(helper.TABLE_NAME,allColumns, null, null, null, null, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast() ) {
+
+            String newMessage = cursor.getString(cursor.getColumnIndex(ChatDatabaseHelper.COLUMN_MESSAGE));
+
+            //todo this could be adding twice with what I have in the the setOnClickListener for sendButton.
+            msgs.add(newMessage);
+            Log.i(ACTIVITY_NAME, "SQL MESSAGE:" + cursor.getString(cursor.getColumnIndex(ChatDatabaseHelper.COLUMN_MESSAGE)));
+            // String thisName = results1.geString(nameColumnIndex);
+            cursor.moveToNext();
+        }
+
+        for(int x = 0; x < cursor.getColumnCount(); x++){
+            cursor.getColumnName(x);
+            Log.i(ACTIVITY_NAME, "Cursors  column count =" + cursor.getColumnCount() );
+        }
+
 
 
         ListView listView = (ListView) findViewById(R.id.listView);
@@ -82,6 +101,9 @@ public class ChatWindow extends AppCompatActivity {
                      */
 
                     getMsgs().add(aSingleMessage);
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(ChatDatabaseHelper.COLUMN_MESSAGE, editText.getText().toString());
+                    database.insert(ChatDatabaseHelper.TABLE_NAME, "null", contentValues);
                     editText.setText("");
                     editText.setHint("So far " + getMsgs().size() + " messages");
                     messageAdapter.notifyDataSetChanged();
@@ -173,5 +195,18 @@ public class ChatWindow extends AppCompatActivity {
 
     }//end class ChatAdapter
 
+    @Override
+    protected void onDestroy() {
+        Log.i(ACTIVITY_NAME, "In onDestroy()");
+        super.onDestroy();
+        cursor.close();
+        database.close();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cursor.close();
+        database.close();
+    }
 }//end class ChatWindow
