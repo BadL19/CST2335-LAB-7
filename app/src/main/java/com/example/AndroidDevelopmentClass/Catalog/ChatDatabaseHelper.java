@@ -10,7 +10,7 @@ import android.util.Log;
  */
 
 public class ChatDatabaseHelper extends SQLiteOpenHelper {
-    public static  final String TABLE_MESSAGES = "comments";
+    public static  final String TABLE_NAME = "CHATS";
     private static final String DATABASE_NAME = "Chats.db";
     private static final int VERSION_NUM = 1;
     public static final String COLUMN_ID = "_id";
@@ -18,10 +18,10 @@ public class ChatDatabaseHelper extends SQLiteOpenHelper {
 
     //Database creation sql statement:
     private static final String DATABASE_CREATE = "create table "
-            + TABLE_MESSAGES
+            + TABLE_NAME
             + "( "
             + COLUMN_ID
-            + "integer primary key autoincrement, "
+            + " integer primary key autoincrement, "
             + COLUMN_MESSAGE
             + " text not null);";
 
@@ -42,7 +42,7 @@ public class ChatDatabaseHelper extends SQLiteOpenHelper {
         Log.w(ChatDatabaseHelper.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES );
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME );
         onCreate(db);
     }
 }

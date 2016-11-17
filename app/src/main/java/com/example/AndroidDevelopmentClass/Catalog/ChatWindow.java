@@ -1,6 +1,7 @@
 package com.example.AndroidDevelopmentClass.Catalog;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -21,12 +23,17 @@ public class ChatWindow extends AppCompatActivity {
     //ArrayList to hold the messages of the chat.
     private ArrayList<String> msgs = new ArrayList<>();
 
+    SQLiteDatabase database;
+    ChatDatabaseHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_window);
 
+        helper = new ChatDatabaseHelper(this);
+        database = helper.getWritableDatabase();
+        Toast.makeText(this, "made it", Toast.LENGTH_SHORT).show();
 
         ListView listView = (ListView) findViewById(R.id.listView);
         final ChatAdapter messageAdapter = new ChatAdapter(this);
