@@ -2,7 +2,7 @@
     <string name="app_name">Lab 1</string>
     <string name="app_synopsis">Lab 4-Android Development</string>
     <string name="hello_message">Hello World!</string>
-    <string name="button_name">I\'m just a button!</string>
+    <string name="button_name">Buttons Switches, and etc.</string>
     <string name="title_activity_login">Lab 3</string>
     <string name="login_label">Login</string>
     <string name="login_hint_message">login name</string>
@@ -24,5 +24,6 @@
     <string name="StartChatLabel">Start Chat</string>
     <string name="SendButtonLabel">Send</string>
     <string name="EditTextHint">Your text...</string>
+    <string name="weather_forecast">Weather Forecast</string>
 
 </resources>

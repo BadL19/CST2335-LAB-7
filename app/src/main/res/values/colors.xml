@@ -3,4 +3,9 @@
     <color name="colorPrimary">#763034</color>
     <color name="colorPrimaryDark">#107697</color>
     <color name="colorAccent">#1d2068</color>
+    <color name="WeatherBackgroundColor">#360333</color>
+    <color name="textColor">#b8b8b9</color>
+    <color name="titleColor">#fdfdfd</color>
+
+
 </resources>
