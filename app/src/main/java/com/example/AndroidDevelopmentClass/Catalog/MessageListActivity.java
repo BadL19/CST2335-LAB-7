@@ -73,7 +73,7 @@ public class MessageListActivity extends AppCompatActivity {
      upgrades.
      */
     ChatDatabaseHelper helper;
-
+    ListView listView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +109,7 @@ public class MessageListActivity extends AppCompatActivity {
         Toast.makeText(this, "made it", Toast.LENGTH_SHORT).show();
 
 
-        ListView listView = (ListView) findViewById(R.id.listView);
+        listView = (ListView) findViewById(R.id.listView);
         final MessageListActivity.ChatAdapter messageAdapter = new MessageListActivity.ChatAdapter(this);
         listView.setAdapter(messageAdapter);
         Button button = (Button) findViewById(R.id.sendButton);
@@ -151,6 +151,9 @@ public class MessageListActivity extends AppCompatActivity {
                     editText.setText("");
                     editText.setHint("So far " + getMsgs().size() + " messages");
                     messageAdapter.notifyDataSetChanged();
+
+
+                    scrollMyListViewToBottom();
                 }//end else
             }//end onClick
         });//end setOnClickListener
@@ -300,8 +303,22 @@ public class MessageListActivity extends AppCompatActivity {
     }//end class ChatAdapter
 
 
+    //I believe this was auto generated
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+    }
+
+
+    //to keep the listView scrolled at the bottom ONLY
+    // when there is a new entry. Just like WhatsApp
+    private void scrollMyListViewToBottom() {
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+                // Select the last row so it will scroll into view...
+                listView.setSelection(listView.getCount() - 1);
+            }
+        });
     }
 
     public class SimpleItemRecyclerViewAdapter
