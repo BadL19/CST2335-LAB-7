@@ -25,5 +25,7 @@
     <string name="SendButtonLabel">Send</string>
     <string name="EditTextHint">Your text...</string>
     <string name="weather_forecast">Weather Forecast</string>
+    <string name="title_message_list">Messages</string>
+    <string name="title_message_detail">Message Detail</string>
 
 </resources>

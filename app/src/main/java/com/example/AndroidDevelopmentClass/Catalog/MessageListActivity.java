@@ -2,10 +2,14 @@ package com.example.AndroidDevelopmentClass.Catalog;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,11 +22,30 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.example.AndroidDevelopmentClass.Catalog.dummy.DummyContent;
+
 import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * An activity representing a list of Messages. This activity
+ * has different presentations for handset and tablet-size devices. On
+ * handsets, the activity presents a list of items, which when touched,
+ * lead to a {@link MessageDetailActivity} representing
+ * item details. On tablets, the activity presents the list of items and
+ * item details side-by-side using two vertical panes.
+ */
+public class MessageListActivity extends AppCompatActivity {
+
+    /**
+     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
+     * device.
+     */
+    private boolean mTwoPane;
 
 
-public class ChatWindow extends AppCompatActivity {
-
+    // bringing over the variables from the ChatWindow.java
     public static final String ACTIVITY_NAME = "Query";
     public static final String SQL_MESSAGE = "SQL MESSAGE:";
     public static final String COLUMN_COUNT = "Cursor\'s  column count= ";
@@ -51,11 +74,30 @@ public class ChatWindow extends AppCompatActivity {
      */
     ChatDatabaseHelper helper;
 
-    ListView listView = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_window);
+        setContentView(R.layout.activity_message_list);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(getTitle());
+
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
+
+
+//        View recyclerView = findViewById(R.id.message_list);
+//        assert recyclerView != null;
+//        setupRecyclerView((RecyclerView) recyclerView);
+
 
         //instantiating a ChatDatabaseHelper object
         helper = new ChatDatabaseHelper(this);
@@ -67,13 +109,11 @@ public class ChatWindow extends AppCompatActivity {
         Toast.makeText(this, "made it", Toast.LENGTH_SHORT).show();
 
 
-        listView = (ListView) findViewById(R.id.listView);
-        final ChatAdapter messageAdapter = new ChatAdapter(this);
+        ListView listView = (ListView) findViewById(R.id.listView);
+        final MessageListActivity.ChatAdapter messageAdapter = new MessageListActivity.ChatAdapter(this);
         listView.setAdapter(messageAdapter);
         Button button = (Button) findViewById(R.id.sendButton);
         final EditText editText = (EditText) findViewById(R.id.editText);
-
-
 
         /*
         We first add the user values into the database and after the setOnClickListener, we
@@ -111,10 +151,6 @@ public class ChatWindow extends AppCompatActivity {
                     editText.setText("");
                     editText.setHint("So far " + getMsgs().size() + " messages");
                     messageAdapter.notifyDataSetChanged();
-
-
-                    //upon updating, always take the list view to the bottom
-                    scrollMyListViewToBottom();
                 }//end else
             }//end onClick
         });//end setOnClickListener
@@ -162,12 +198,19 @@ public class ChatWindow extends AppCompatActivity {
         //see comments for private void TableStat()
         TableStat();
 
-    }//end onCreate
 
+        if (findViewById(R.id.message_detail_container) != null) {
+            // The detail container view will be present only in the
+            // large-screen layouts (res/values-w900dp).
+            // If this view is present, then the
+            // activity should be in two-pane mode.
+            mTwoPane = true;
+        }
+    }
 
     /*
-    Using the cursor to get the number of columns, and their names
-     */
+        Using the cursor to get the number of columns, and their names
+    */
     private void TableStat() {
         for (int x = 0; x < cursor.getColumnCount(); x++) {
             Log.i("Cursor column name", cursor.getColumnName(x));
@@ -177,11 +220,11 @@ public class ChatWindow extends AppCompatActivity {
 
 
     /*
-    getters and setters for the ArrayList msgs.
-    It was first declared inside the onCreate() of the ChatWindow class, but since
-    the ChatAdapter class needed it, decided to give accessibility to it so that it can be accessed
-    from anywhere within the ChatWindow class :)
-     */
+        getters and setters for the ArrayList msgs.
+        It was first declared inside the onCreate() of the ChatWindow class, but since
+        the ChatAdapter class needed it, decided to give accessibility to it so that it can be accessed
+        from anywhere within the ChatWindow class :)
+    */
     public ArrayList<String> getMsgs() {
         return msgs;
     }
@@ -190,11 +233,13 @@ public class ChatWindow extends AppCompatActivity {
         this.msgs = msgs;
     }
 
-
     /*
-    Takes every single simple element of the ListView view and gives it its own layout.
-     */
+ Takes every single simple element of the ListView view and gives it its own layout.
+  */
     private class ChatAdapter extends ArrayAdapter<String> {
+        //        public DummyContent.DummyItem mItem;
+
+
         public ChatAdapter(Context context) {
             super(context, 0);
         }
@@ -208,48 +253,123 @@ public class ChatWindow extends AppCompatActivity {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = ChatWindow.this.getLayoutInflater();
+
+            LayoutInflater inflater = MessageListActivity.this.getLayoutInflater();
             View result = null;
+
             if (position % 2 == 0) {
                 result = inflater.inflate(R.layout.chat_row_outing, null);
             } else {
                 result = inflater.inflate(R.layout.chat_row_incoming, null);
             }
+
+
             TextView message = (TextView) result.findViewById(R.id.message_text);  //this is the msg from the chat_row_incoming/outing
-            message.setText(getItem(position));
+//            message.setText(getItem(position));
+
+            final String messageText = getItem(position);
+            message.setText(messageText);
+
+
+            result.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mTwoPane) {
+                        Bundle arguments = new Bundle();
+                        arguments.putString(MessageDetailFragment.ARG_ITEM_ID, messageText);
+                        MessageDetailFragment fragment = new MessageDetailFragment();
+                        fragment.setArguments(arguments);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.message_detail_container, fragment)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, MessageDetailActivity.class);
+                        intent.putExtra(MessageDetailFragment.ARG_ITEM_ID, messageText);
+
+                        context.startActivity(intent);
+                    }
+                }
+            });
+
+
             return result;
         }//end getView
 
 
     }//end class ChatAdapter
 
-    /*
-    We want to close both the cursor and the database when the application is out of focus
-    and/or destroyed. This will prevent database leaks!
-     */
-    @Override
-    protected void onDestroy() {
-        Log.i(ACTIVITY_NAME, "In onDestroy()");
-        super.onDestroy();
-        cursor.close();
-        database.close();
+
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        cursor.close();
-        database.close();
-    }
+    public class SimpleItemRecyclerViewAdapter
+            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
+        private final List<DummyContent.DummyItem> mValues;
 
-    private void scrollMyListViewToBottom() {
-        listView.post(new Runnable() {
-            @Override
-            public void run() {
-                // Select the last row so it will scroll into view...
-                listView.setSelection(listView.getCount() - 1);
+        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
+            mValues = items;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.message_list_content, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final ViewHolder holder, int position) {
+            holder.mItem = mValues.get(position);
+            holder.mIdView.setText(mValues.get(position).id);
+            holder.mContentView.setText(mValues.get(position).content);
+
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mTwoPane) {
+                        Bundle arguments = new Bundle();
+                        arguments.putString(MessageDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        MessageDetailFragment fragment = new MessageDetailFragment();
+                        fragment.setArguments(arguments);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.message_detail_container, fragment)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, MessageDetailActivity.class);
+                        intent.putExtra(MessageDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+
+                        context.startActivity(intent);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mValues.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public final View mView;
+            public final TextView mIdView;
+            public final TextView mContentView;
+            public DummyContent.DummyItem mItem;
+
+            public ViewHolder(View view) {
+                super(view);
+                mView = view;
+                mIdView = (TextView) view.findViewById(R.id.id);
+                mContentView = (TextView) view.findViewById(R.id.content);
             }
-        });
+
+            @Override
+            public String toString() {
+                return super.toString() + " '" + mContentView.getText() + "'";
+            }
+        }
     }
-}//end class ChatWindow
+}
